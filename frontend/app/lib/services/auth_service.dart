@@ -7,7 +7,7 @@ class AuthService {
 
   // Login user and save JWT token
   Future<bool> login(String email, String password) async {
-    final response = await ApiClient.post("/login", {
+    final response = await ApiClient.post("/api/auth/login", {
       "email": email,
       "password": password,
     });
@@ -27,17 +27,17 @@ class AuthService {
 
   // Register new user
   Future<bool> signup(String email, String password) async {
-    final response = await ApiClient.post("/signup", {
+    final response = await ApiClient.post("/api/auth/signup", {
       "email": email,
       "password": password,
     });
 
-    return response.statusCode == 201;
+    return response.statusCode == 200 || response.statusCode == 201;
   }
 
   // Forgot password (send OTP)
   Future<bool> forgotPassword(String email) async {
-    final response = await ApiClient.post("/forgot-password", {
+    final response = await ApiClient.post("/api/auth/forgot-password", {
       "email": email,
     });
 

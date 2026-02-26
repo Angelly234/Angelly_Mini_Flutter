@@ -29,7 +29,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   // Load categories from API
   Future<void> loadCategories(String search) async {
-    final data = await service.getCategories(search);
+    final data = await service.getCategories(search: search);
     setState(() {
       categories = data;
     });

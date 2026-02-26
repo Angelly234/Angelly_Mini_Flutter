@@ -29,4 +29,17 @@ class ApiClient {
       },
     );
   }
+
+  // 👇 ADD THIS
+  static Future<http.Response> delete(String path) async {
+    final token = await Storage.getToken();
+
+    return http.delete(
+      Uri.parse("$baseUrl$path"),
+      headers: {
+        "Content-Type": "application/json",
+        if (token != null) "Authorization": "Bearer $token",
+      },
+    );
+  }
 }

@@ -10,96 +10,155 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   final AuthService authService = AuthService();
 
-  String errorMessage = "";
+  bool isLoading = false;
+  String message = "";
+  bool isError = false;
 
   Future<void> handleLogin() async {
+
+    setState(() {
+      isLoading = true;
+      message = "";
+    });
+
     final success = await authService.login(
-      emailController.text,
-      passwordController.text,
+      emailController.text.trim(),
+      passwordController.text.trim(),
     );
+
+    if (!mounted) return;
+
+    setState(() {
+      isLoading = false;
+    });
 
     if (success) {
       Navigator.pushReplacementNamed(context, "/products");
     } else {
       setState(() {
-        errorMessage = "Invalid credentials";
+        message = "Invalid email or password";
+        isError = true;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-
-              const Text(
-                "Login",
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-              ),
-
-              const SizedBox(height: 20),
-
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  labelText: "Email",
-                  border: OutlineInputBorder(),
+      backgroundColor: Colors.grey[100],
+      body: Center(
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withValues(alpha: 0.2),
+                  blurRadius: 10,
+                  spreadRadius: 2,
                 ),
-              ),
+              ],
+            ),
+            child: Column(
+              children: [
 
-              const SizedBox(height: 15),
-
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: "Password",
-                  border: OutlineInputBorder(),
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              if (errorMessage.isNotEmpty)
-                Text(
-                  errorMessage,
-                  style: const TextStyle(color: Colors.red),
+                const Icon(
+                  Icons.lock_outline,
+                  size: 60,
+                  color: Colors.blueAccent,
                 ),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 15),
 
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: handleLogin,
-                  child: const Text("Login"),
+                const Text(
+                  "Welcome Back",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
 
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, "/signup");
-                },
-                child: const Text("Sign Up"),
-              ),
+                const SizedBox(height: 25),
 
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, "/forgot");
-                },
-                child: const Text("Forgot Password"),
-              ),
-            ],
+                TextField(
+                  controller: emailController,
+                  decoration: const InputDecoration(
+                    labelText: "Email",
+                    prefixIcon: Icon(Icons.email),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+
+                const SizedBox(height: 15),
+
+                TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: "Password",
+                    prefixIcon: Icon(Icons.lock),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+
+                const SizedBox(height: 15),
+
+                if (message.isNotEmpty)
+                  Text(
+                    message,
+                    style: TextStyle(
+                      color: isError ? Colors.red : Colors.green,
+                    ),
+                  ),
+
+                const SizedBox(height: 20),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: isLoading ? null : handleLogin,
+                    child: isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            "Login",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                  ),
+                ),
+
+                const SizedBox(height: 15),
+
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, "/signup");
+                  },
+                  child: const Text("Don't have an account? Sign Up"),
+                ),
+
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, "/forgot");
+                  },
+                  child: const Text("Forgot Password?"),
+                ),
+              ],
+            ),
           ),
         ),
       ),

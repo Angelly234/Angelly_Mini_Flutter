@@ -1,17 +1,15 @@
 require("dotenv").config()
-
 const express = require("express")
 const cors = require("cors")
 const app = express()
-
-const sql = require("./db")
+require("./db")
 
 app.use(express.json())
 app.use(cors())
 
-app.get("/", (req,res)=>{
-  res.send("API Running")
-})
+app.use("/api/auth", require("./routes/auth"))
+app.use("/api/categories", require("./routes/category"))
+app.use("/api/products", require("./routes/product"))
 
 app.listen(3000, () => {
   console.log("Server running on port 3000")
